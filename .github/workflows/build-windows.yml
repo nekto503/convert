@@ -1,0 +1,57 @@
+# Сборка Windows-установщика CONVERT (NSIS + MSI).
+# Запуск: тег v* или вручную (workflow_dispatch).
+name: Build Windows Installer
+on:
+  push:
+    tags: ['v*']
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Установка Rust
+        uses: dtolnay/rust-toolchain@stable
+
+      - name: Кэш cargo
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.cargo/registry
+            ~/.cargo/git
+            target
+          key: convert-windows-${{ hashFiles('**/Cargo.lock') }}
+
+      - name: Установка Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Установка зависимостей frontend
+        run: npm --prefix app ci || npm --prefix app install
+
+      - name: Тесты движков
+        run: cargo test --workspace --manifest-path Cargo.toml
+
+      - name: Сборка Tauri (NSIS + MSI)
+        uses: tauri-apps/tauri-action@v0
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          projectPath: .
+          tauriScript: npx tauri
+          tagName: ${{ github.ref_name }}
+          releaseName: 'CONVERT ${{ github.ref_name }}'
+          releaseDraft: true
+          prerelease: false
+
+      - name: Артефакты
+        uses: actions/upload-artifact@v4
+        with:
+          name: convert-windows-installers
+          path: |
+            src-tauri/target/release/bundle/nsis/*.exe
+            src-tauri/target/release/bundle/msi/*.msi
+          if-no-files-found: warn

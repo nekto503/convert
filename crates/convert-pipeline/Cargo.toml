@@ -1,0 +1,12 @@
+[package]
+name = "convert-pipeline"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+authors.workspace = true
+
+[dependencies]
+convert-core = { workspace = true }
+convert-db = { workspace = true }
+serde = { workspace = true }
+serde_json = { workspace = true }

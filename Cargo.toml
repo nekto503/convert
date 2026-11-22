@@ -1,0 +1,45 @@
+[workspace]
+resolver = "2"
+members = [
+    "crates/convert-core",
+    "crates/convert-image",
+    "crates/convert-media",
+    "crates/convert-pdf",
+    "crates/convert-archive",
+    "crates/convert-db",
+    "crates/convert-tools",
+    "crates/convert-pipeline",
+    "crates/convert-app",
+]
+default-members = ["crates/*"]
+
+# src-tauri НЕ входит в workspace: Tauri требует system GTK/WebKit,
+# которые недоступны в Linux-песочнице. Оболочка собирается под Windows
+# через CI (.github/workflows) и локально на машине разработчика.
+exclude = ["src-tauri"]
+
+[workspace.package]
+version = "0.1.0"
+edition = "2021"
+license = "MIT OR Apache-2.0"
+authors = ["CONVERT Team"]
+repository = "https://example.invalid/convert"
+
+[workspace.dependencies]
+convert-core = { path = "crates/convert-core" }
+convert-image = { path = "crates/convert-image" }
+convert-media = { path = "crates/convert-media" }
+convert-pdf = { path = "crates/convert-pdf" }
+convert-archive = { path = "crates/convert-archive" }
+convert-db = { path = "crates/convert-db" }
+convert-tools = { path = "crates/convert-tools" }
+convert-pipeline = { path = "crates/convert-pipeline" }
+convert-app = { path = "crates/convert-app" }
+
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"
+thiserror = "2"
+
+[profile.release]
+lto = "thin"
+codegen-units = 1

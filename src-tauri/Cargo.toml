@@ -1,0 +1,28 @@
+[package]
+name = "convert-desktop"
+version = "0.1.0"
+edition = "2021"
+description = "CONVERT — настольное приложение для работы с файлами"
+
+[build-dependencies]
+tauri-build = { version = "2", features = [] }
+
+[dependencies]
+tauri = { version = "2", features = ["tray-icon"] }
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"
+
+# Движки CONVERT (workspace-крейты).
+convert-core = { path = "../crates/convert-core" }
+convert-image = { path = "../crates/convert-image" }
+convert-media = { path = "../crates/convert-media" }
+convert-pdf = { path = "../crates/convert-pdf" }
+convert-archive = { path = "../crates/convert-archive" }
+convert-db = { path = "../crates/convert-db" }
+convert-tools = { path = "../crates/convert-tools" }
+convert-pipeline = { path = "../crates/convert-pipeline" }
+convert-app = { path = "../crates/convert-app" }
+
+[lib]
+name = "convert_desktop_lib"
+crate-type = ["staticlib", "cdylib", "rlib"]
